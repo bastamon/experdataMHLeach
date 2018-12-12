@@ -72,7 +72,7 @@ figure(2)
 b=polyfit(x,AvgEn,6);%进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
 yy=polyval(b,x);%得到拟合后y的新值
 plot(x,yy,'b-')%画拟合图 
-
+title('平均电压趋势');
 xlabel('时间');
 ylabel('平均电压');
 grid on;
