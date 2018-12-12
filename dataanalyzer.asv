@@ -1,0 +1,44 @@
+% clear;clc;
+% [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Results');
+% for i=1:length(ref)
+%     ref(i,5)=datenum(temp(i+1,5));
+% end
+% 
+% comp = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Compute');
+% save ( 'orig.mat','comp', 'ref');
+clear;clc;
+
+MINUTEUNIT=datenum(2001,01,01,12,01,00)-datenum(2001,01,01,12,00,00);
+HOURUNIT=datenum(2001,01,01,13,00,00)-datenum(2001,01,01,12,00,00);
+load('orig');
+
+
+for i=1:length(comp)
+    onenode = ref(ref(:,2)==comp(i,2),:);
+    timespan = round((onenode(end,5)-onenode(1,5))/HOURUNIT);
+%     idx=round(linspace(onenode(1,4),onenode(end,4),timespan));
+%     idx=round(linspace(1,length(onenode),timespan));
+
+    simples=onenode(1,:);
+    firsttime=onenode(1,5);
+    disp(datestr(firsttime));
+    for j=1:timespan
+        for k=1:length(onenode)
+            if onenode(k,5)-firsttime>j*HOURUNIT
+                disp(datestr(onenode(k,5)));
+                simples=[simples;onenode(k,:)];
+                break;   
+            end
+        end
+    end
+
+
+    disp(datestr(simples(:,5)));
+end
+
+
+
+
+
+
+
