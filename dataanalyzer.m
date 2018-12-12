@@ -37,6 +37,18 @@
 load('orig_simpled.mat');
 
 
+figure(1)
+for i=1:length(simples)
+    [m,~]=size(simples(i).nodeID);
+    x=linspace(1,m,m)';
+    y=simples(i).nodeID(:,6);
+    plot(x,y);
+    hold on;
+    
+end
+grid on;
+hold off;
+
 
 
 
