@@ -1,4 +1,4 @@
-% clear;clc;
+clear;clc;
 % [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Results');
 % for i=1:length(ref)
 %     ref(i,5)=datenum(temp(i+1,5));
@@ -38,6 +38,7 @@ load('orig_simpled.mat');
 
 
 figure(1)
+simples(16)=[];
 for i=1:length(simples)
     [m,~]=size(simples(i).nodeID);
     x=linspace(1,m,m)';
@@ -46,6 +47,8 @@ for i=1:length(simples)
     hold on;
     
 end
+xlabel(' ±º‰');
+ylabel('µÁ—π');
 grid on;
 hold off;
 
