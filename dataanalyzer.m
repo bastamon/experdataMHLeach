@@ -38,7 +38,7 @@ load('orig_simpled.mat');
 
 
 figure(1)
-simples(16)=[];
+simples(16)=[];%去除异常
 msY=0;
 for i=1:length(simples)
     [m,~]=size(simples(i).nodeID);
@@ -78,6 +78,19 @@ ylabel('平均电压');
 grid on;
 hold off;
 
+% 统计消息数量，运行时间
+packetnum=[];
+firsttime=[];
+lasttime=[];
+for i=1:length(comp)
+    onenode = ref(ref(:,2)==comp(i,2),:);
+    packetnum=[packetnum;length(onenode)*34];%byte
+    firsttime=[firsttime;onenode(1,5)];
+    lasttime=[lasttime;onenode(end,5)];
+end
+figure(3)
+bar(packetnum);
 
 
+runningdur=60.*hour(lasttime-firsttime)+minute(lasttime-firsttime); 
 

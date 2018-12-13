@@ -1,4 +1,4 @@
-clear;clc;
+clear;clc;close all;
 % [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Results');
 % for i=1:length(ref)
 %     ref(i,5)=datenum(temp(i+1,5));
@@ -38,7 +38,7 @@ load('orig_simpled.mat');
 
 
 figure(1)
-simples(16)=[];
+simples(16)=[];%去除异常
 msY=0;
 for i=1:length(simples)
     [m,~]=size(simples(i).nodeID);
@@ -64,20 +64,33 @@ end
 for i=1:length(Ematrix)
     counts=[counts;sum((Ematrix(i,:)~=0))];
 end
-AvgEn=[];
-for i=1:length(simples)
-    AvgEn=[AvgEn;sum(Ematrix(i,:),2)/counts(i)];    
-end
+
+
+AvgEn=sum(Ematrix,2)./counts;
+AvgEn=sort(AvgEn,'descend');
 figure(2)
-plot(x,AvgEn);
+b=polyfit(x,AvgEn,6);%进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
+yy=polyval(b,x);%得到拟合后y的新值
+plot(x,yy,'b-')%画拟合图 
+title('平均电压趋势');
 xlabel('时间');
-ylabel('电压');
+ylabel('平均电压');
 grid on;
 hold off;
 
-
-
-
-for i=1:length(simples)
-    temp=sum(Ematrix(i,:),2)
+% 统计消息数量，运行时间
+packetnum=[];
+firsttime=[];
+lasttime=[];
+for i=1:length(comp)
+    onenode = ref(ref(:,2)==comp(i,2),:);
+    packetnum=[packetnum;length(onenode)*34];%byte
+    firsttime=[firsttime;onenode(1,5)];
+    lasttime=[lasttime;onenode(end,5)];
 end
+figure(3)
+bar(packetnum);
+
+runningdur=;
+runningdur=60.*hour(lasttime-firsttime)+minute(lasttime-firsttime); 
+
