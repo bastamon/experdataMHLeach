@@ -75,10 +75,11 @@ load('orig_simpled1.mat');
 figure(1)
 % simples(16)=[];%去除异常
 msY=0;
+xend=[];
+yend=[];
 for i=1:length(simples)
     [m,~]=size(simples(i).nodeID);
     x=linspace(1,m,m)'-1;
-%     x1=linspace(1,m,m)';
     y=simples(i).nodeID(:,6);    
     x(all(y==0,2),:)=[];
     x(end)=x(end-1)+minute(simples(i).nodeID(end,5))/60;
@@ -88,29 +89,38 @@ for i=1:length(simples)
 %     b=polyfit(x,y,2);
 %     yy=polyval(b,x);
     
-    
+    xend=[xend;x(end)];
+    yend=[yend;y(end)];
     plot(x,y);
     hold on;
     if msY<length(y)
         msY=length(y);        
     end
 end
-xlabel('时间');
-ylabel('电压');
+xlabel('时间/h');
+ylabel('电压/V');
 grid on;
 hold off;
 
-
+tend=[];
 Ematrix=[];
 counts=[];
 for i=1:length(simples)
     Ematrix=[Ematrix,[simples(i).nodeID(:,6);zeros(msY-length(simples(i).nodeID(:,6)),1)]];
+    tend=[tend;simples(i).nodeID(end,5)-simples(i).nodeID(1,5)];
 end
 for i=1:length(Ematrix)
     counts=[counts;sum((Ematrix(i,:)~=0))];
 end
 
 
+
+
+
+
+xend=24*day(tend)+hour(tend)+minute(tend)/60;
+xend=sort(xend);
+yend=linspace(length(xend),1,length(xend))';
 AvgEn=sum(Ematrix,2)./counts;
 figure(2)
 x=linspace(1,length(AvgEn),length(AvgEn))'-1;
@@ -118,12 +128,24 @@ AvgEn=sort(AvgEn,'descend');
 % b=polyfit(x,AvgEn,4);% 3 or 4进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
 % b=polyfit(x,interp1(x,y,x),6);
 % yy=polyval(b,x);%得到拟合后y的新值
-plot(x,y,'b-')%画拟合图 
+plot(x,y,'b-');%画拟合图 
 title('平均电压趋势');
-xlabel('时间');
-ylabel('平均电压');
+xlabel('时间/h');
+ylabel('平均电压/V');
 grid on;
 hold off;
+
+
+figure(3)
+plot(xend,yend,'b-',xend,yend,'rx');
+title('死亡时间/h');
+xlabel('时间');
+ylabel('剩余节点数/个');
+grid on;
+hold off;
+
+
+
 
 % 统计消息数量，运行时间
 packetnum=[];
@@ -135,7 +157,7 @@ for i=1:length(comp)
     firsttime=[firsttime;onenode(1,5)];
     lasttime=[lasttime;onenode(end,5)];
 end
-figure(3)
+figure(4)
 bar(packetnum);
 
 
