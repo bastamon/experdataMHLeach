@@ -1,5 +1,5 @@
 clear;clc;close all;
-% [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results','Results');
+% [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Results');
 % ref(1:end,5)=datenum(temp(2:end,5));
 % 
 % 
@@ -129,10 +129,11 @@ AvgEn=sum(Ematrix,2)./counts;
 figure('NumberTitle', 'off', 'Name', 'energytrend2');
 x=linspace(1,length(AvgEn),length(AvgEn))'-1;
 AvgEn=sort(AvgEn,'descend');
-% b=polyfit(x,AvgEn,4);% 3 or 4进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
-% b=polyfit(x,interp1(x,y,x),6);
-% yy=polyval(b,x);%得到拟合后y的新值
-plot(x,y,'b-');%画拟合图
+b=polyfit(x,AvgEn,3);% 3 or 4进行次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
+% b=polyfit(x,interp1(x,y,x),7);
+yy=polyval(b,x);%得到拟合后y的新值
+plot(x,[AvgEn(1:12);yy(13:end)],'b-');%画拟合图
+% plot(x,AvgEn,'b-');%画拟合图
 hold on;
 title('平均电压趋势');
 xlabel('时间/h');
@@ -188,14 +189,14 @@ xtick=mat2cell(temp,ones(length(comp),1),6);
 x=linspace(1,length(comp),length(comp))*10;
 
 figure('NumberTitle', 'off', 'Name', 'bytepackets');
-bar(x,packetnum,0.8,'m');
+barh(x,packetnum,0.6,'b');
 hold on;
-xlim([5 205]);
-set(gca,'xtick',x);
-set(gca,'xticklabel',xtick);
+ylim([5 210]);
+set(gca,'ytick',x);
+set(gca,'yticklabel',xtick);
 title('组网数据包数');
-ylabel('消息量/byte');
-xlabel('节点ID');
+xlabel('消息量/byte');
+ylabel('节点ID');
 grid on;
 hold off;
 
@@ -204,7 +205,7 @@ runningdur=60.*(24.*day(dur)+hour(dur))+minute(dur);
 
 
 figure('NumberTitle', 'off', 'Name', 'sustaindur');
-barh(x,runningdur,'m');
+barh(x,runningdur,0.6,'b');
 hold on;
 ylim([0 210]);
 set(gca,'ytick',x);

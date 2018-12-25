@@ -63,18 +63,17 @@ timespan = 24*day(ref(end,5)-ref(1,5))+hour(ref(end,5)-ref(1,5));
 % 
 % 
 % save ( 'ESRCHE_simpled.mat','comp', 'ref','simples');
-% clear;
+clear;
+
 load('ESRCHE_simpled.mat');
 
-xend=[];
-yend=[];
-figure(1)
-% simples(16)=[];%去除异常
+
+figure('NumberTitle', 'off', 'Name', '单个节点电压变化');
 msY=0;
+tend=[];
 for i=1:length(simples)
     [m,~]=size(simples(i).nodeID);
     x=linspace(1,m,m)'-1;
-%     x1=linspace(1,m,m)';
     y=simples(i).nodeID(:,6);    
     x(all(y==0,2),:)=[];
     x(end)=x(end-1)+minute(simples(i).nodeID(end,5))/60;
@@ -84,17 +83,15 @@ for i=1:length(simples)
 %     b=polyfit(x,y,2);
 %     yy=polyval(b,x);
     
-    xend=[xend;x(end)];
-    yend=[yend;y(end)];
+    tend=[tend;simples(i).nodeID(1,2),x(end)];
     plot(x,y);
     hold on;
-    if msY<m
-        msY=m;        
+    if msY<length(simples(i).nodeID(:,1))
+        msY=length(simples(i).nodeID(:,1));        
     end
 end
-xlim([0 25]);
-xlabel('时间');
-ylabel('电压');
+xlabel('时间/h');
+ylabel('电压/V');
 grid on;
 hold off;
 
@@ -109,38 +106,95 @@ for i=1:length(Ematrix(:,1))
 end
 
 
+[xend,I]=sort(tend(:,2));
+yend=linspace(length(xend),1,length(xend))';
 AvgEn=sum(Ematrix,2)./counts;
-AvgEn(isnan(AvgEn))=0;
-figure(2)
+figure('NumberTitle', 'off', 'Name', 'energytrend2');
 x=linspace(1,length(AvgEn),length(AvgEn))'-1;
-AvgEn=sort(AvgEn,'descend');
-x(all(AvgEn==0,2),:)=[];
-AvgEn(all(AvgEn==0,2),:)=[];
-% b=polyfit(x,AvgEn,4);% 3 or 4进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
+% AvgEn=sort(AvgEn,'descend');
+b=polyfit(x,AvgEn,4);% 3 or 4进行6次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
 % b=polyfit(x,interp1(x,y,x),6);
-% yy=polyval(b,x);%得到拟合后y的新值
-
-plot(x,AvgEn,'b-')%画拟合图 
-xlim([0 25]);
+yy=polyval(b,x);%得到拟合后y的新值
+% plot(x,yy,'b-');%画拟合图
+plot(x,AvgEn,'b-');%画拟合图
+hold on;
 title('平均电压趋势');
-xlabel('时间');
-ylabel('平均电压');
+xlabel('时间/h');
+ylabel('平均电压/V');
 grid on;
 hold off;
 
+
+figure('NumberTitle', 'off', 'Name', 'sustainNode');
+plot(xend,yend,'b-',xend,yend,'rx');
+hold on;
+for i=1:length(xend)
+    text(xend(i),yend(i)+0.5,char(['0x0',dec2hex(tend(I(i),1))]));
+end
+title('死亡时间/h');
+xlabel('时间/h');
+ylabel('剩余节点数/个');
+grid on;
+hold off;
+
+
+
+
 % 统计消息数量，运行时间
 packetnum=[];
-firsttime=[];
-lasttime=[];
-for i=1:length(comp)
-    onenode = ref(ref(:,2)==comp(i,2),:);
-    packetnum=[packetnum;length(onenode)*34];%byte
-    firsttime=[firsttime;onenode(1,5)];
-    lasttime=[lasttime;onenode(end,5)];
+dur=[];
+temp=[];
+for i=1:length(comp)    
+    if comp(i,2)==412||comp(i,2)==436||comp(i,2)==429
+        load('ESRCHE');
+        flag=0;
+        onenode = ref(ref(:,2)==comp(i,2),:);%412,436 
+        for j=1:length(onenode(:,1))            
+            if flag==1||day(onenode(j,5))==4&&hour(onenode(j-1,5))==12&&hour(onenode(j,5))==1
+                flag=1;
+                onenode(j,5)=onenode(j,5)+datenum(0,0,0,12,0,0);
+            end
+            if day(onenode(j,5))==3
+                onenode(j,5)=onenode(j,5)+datenum(0,0,0,12,0,0);
+            end
+        end
+        load('orig1');
+    else
+        load('orig1');
+        onenode = ref(ref(:,2)==comp(i,2),:);
+    end
+    packetnum=[packetnum;length(onenode(:,1))*34];%byte
+    dur=[dur;onenode(end,5)-onenode(1,5)];
+    temp=[temp;strcat('0x0',dec2hex(comp(i,2)))];
 end
-figure(3)
-bar(packetnum);
+
+xtick=mat2cell(temp,ones(length(comp),1),6);
+x=linspace(1,length(comp),length(comp))*10;
+
+figure('NumberTitle', 'off', 'Name', 'bytepackets');
+bar(x,packetnum,0.8,'m');
+hold on;
+xlim([5 205]);
+set(gca,'xtick',x);
+set(gca,'xticklabel',xtick);
+title('组网数据包数');
+ylabel('消息量/byte');
+xlabel('节点ID');
+grid on;
+hold off;
+
+% load firstlast;
+runningdur=60.*(24.*day(dur)+hour(dur))+minute(dur); 
 
 
-runningdur=60.*hour(lasttime-firsttime)+minute(lasttime-firsttime); 
+figure('NumberTitle', 'off', 'Name', 'sustaindur');
+barh(x,runningdur,'m');
+hold on;
+ylim([0 210]);
+set(gca,'ytick',x);
+set(gca,'yticklabel',xtick);
+title('节点生存时间统计');
+ylabel('节点ID');
+xlabel('生存时间/mins');
+hold off;
 
