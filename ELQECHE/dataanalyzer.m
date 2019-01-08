@@ -1,13 +1,13 @@
 clear;clc;close all;
-[ref,temp] = xlsread('./WSN_20190106_213744.xlsx','Results');
-ref(1:end,5)=datenum(temp(2:end,5));
-comp = xlsread('./WSN_20190106_213744.xlsx','Compute');
-save ( 'ELQECHE.mat','comp', 'ref');
-clear;clc;
+% [ref,temp] = xlsread('./WSN_20190106_213744.xlsx','Results');
+% ref(1:end,5)=datenum(temp(2:end,5));
+% comp = xlsread('./WSN_20190106_213744.xlsx','Compute');
+% save ( 'ELQECHE1.mat','comp', 'ref');
+% clear;clc;
 
 MINUTEUNIT=datenum(2001,01,01,12,01,00)-datenum(2001,01,01,12,00,00);
 HOURUNIT=datenum(2001,01,01,13,00,00)-datenum(2001,01,01,12,00,00);
-load('ELQECHE'); 
+load('ELQECHE1'); 
 
 timespan = 24*day(ref(end,5)-ref(1,5))+hour(ref(end,5)-ref(1,5));
 for i=1:length(comp(:,2))       
@@ -72,13 +72,13 @@ for i=1:length(comp(:,2))
     simple=[simple;onenode(end,:)];    
     simples(i).nodeID=simple;
 end
-save ( 'ELQECHE_simpled.mat','comp', 'ref','simples');
+save ( 'ELQECHE_simpled1.mat','comp', 'ref','simples');
 
 
 
 
 clear;
-load('ELQECHE_simpled.mat');
+load('ELQECHE_simpled1.mat');
 
 
 figure('NumberTitle', 'off', 'Name', '单个节点电压变化');
