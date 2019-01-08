@@ -1,22 +1,23 @@
 clear;clc;close all;
-load('orig_simpled2.mat');
-% orig_sim = xlsread('./newhopcount.xlsx','origin');
-% ESRCHE_sim=xlsread('./newhopcount.xlsx','ESRCHE');
-% y1=orig_sim(:,6)';
-% y2=ESRCHE_sim(:,6)';
+load('orig1.mat');
+for i=1:length(comp(:,2))
+    simple(i).nodeID=ref(ref(:,2)==comp(i,2),:);
+end
 A=[];
 G=[];
 xtick=[];
-for i=10:length(simples)-1
-    A=[A simples(i).nodeID(:,6)'];
-    G=[G i.*ones(size(simples(i).nodeID(:,6)))'];
-    xtick=[xtick; strcat('0x0',dec2hex(simples(i).nodeID(1,2)))];
+for i=10:length(simple)-1
+    a = simple(i).nodeID(:,7);
+    a(a==0) = []; 
+    A=[A a'];
+    G=[G i.*ones(size(a))'];
+    xtick=[xtick; strcat('0x0',dec2hex(simple(i).nodeID(1,2)))];
 end
 subplot(2,1,1);
 boxplot(A,G);
 set(gca,'xticklabel',xtick);
 title('MHLeach');
-ylim([1 4]);
+ylim([0 10]);
 ylabel('跳数');
 xlabel('节点');
 
@@ -24,19 +25,24 @@ xlabel('节点');
 
 
 
-load('ESRCHE_simpled.mat');
+load('ESRCHE.mat');
+for i=1:length(comp(:,2))
+    simple(i).nodeID=ref(ref(:,2)==comp(i,2),:);
+end
 A=[];
 G=[];
 xtick=[];
-for i=10:length(simples)-1
-    A=[A simples(i).nodeID(:,6)'];
-    G=[G i.*ones(size(simples(i).nodeID(:,6)))'];
-    xtick=[xtick; strcat('0x0',dec2hex(simples(i).nodeID(1,2)))];
+for i=10:length(simple)-1
+    a = simple(i).nodeID(:,7);
+    a(a==0) = []; 
+    A=[A a'];
+    G=[G i.*ones(size(a))'];
+    xtick=[xtick; strcat('0x0',dec2hex(simple(i).nodeID(1,2)))];
 end
 subplot(2,1,2);
 boxplot(A,G);
 set(gca,'xticklabel',xtick);
 title('ESRCHE');
-ylim([1 4]);
+ylim([0 10]);
 ylabel('跳数');
 xlabel('节点');

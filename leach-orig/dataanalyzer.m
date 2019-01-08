@@ -137,6 +137,8 @@ plot(x,[AvgEn(1:12);yy(13:end)],'b-');%画拟合图
 % plot(x,AvgEn,'b-');%画拟合图
 hold on;
 title('平均电压趋势');
+xlim([0 28]);
+ylim([1.8 2.8]);
 xlabel('时间/h');
 ylabel('平均电压/V');
 grid on;
@@ -150,6 +152,7 @@ for i=1:length(xend)
     text(xend(i),yend(i)+0.5,char(['0x0',dec2hex(tend(I(i),1))]));
 end
 title('死亡时间/h');
+xlim([0 28]);
 xlabel('时间/h');
 ylabel('剩余节点数/个');
 grid on;
@@ -206,7 +209,7 @@ runningdur=60.*(24.*day(dur)+hour(dur))+minute(dur);
 
 
 figure('NumberTitle', 'off', 'Name', 'sustaindur');
-barh(x,runningdur,0.6,'b');
+barh(x,runningdur,0.6,'m');
 hold on;
 ylim([0 210]);
 set(gca,'ytick',x);
@@ -214,5 +217,6 @@ set(gca,'yticklabel',xtick);
 title('节点生存时间统计');
 ylabel('节点ID');
 xlabel('生存时间/mins');
+grid on;
 hold off;
 

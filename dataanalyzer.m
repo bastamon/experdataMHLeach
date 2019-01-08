@@ -1,18 +1,18 @@
 clear;clc;close all;
-% [ref,temp] = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Results');
+% [ref,temp] = xlsread('./leach-orig/WSN_20181227_212121.xlsx','Results');
 % ref(1:end,5)=datenum(temp(2:end,5));
 % 
 % 
-% comp = xlsread('./leach-orig/MHLeach_orig_Results.xlsx','Compute');
-% save ( 'orig.mat','comp', 'ref');
+% comp = xlsread('./leach-orig/WSN_20181227_212121.xlsx','Compute');
+% save ( 'orig2.mat','comp', 'ref');
 % clear;clc;
-MINUTEUNIT=datenum(2001,01,01,12,01,00)-datenum(2001,01,01,12,00,00);
-HOURUNIT=datenum(2001,01,01,13,00,00)-datenum(2001,01,01,12,00,00);
-load('orig1'); 
+% MINUTEUNIT=datenum(2001,01,01,12,01,00)-datenum(2001,01,01,12,00,00);
+% HOURUNIT=datenum(2001,01,01,13,00,00)-datenum(2001,01,01,12,00,00);
+load('orig2'); 
 
 timespan = 24*day(ref(end,5)-ref(1,5))+hour(ref(end,5)-ref(1,5));
-% for i=1:length(comp(:,2))       
-%     simple=zeros(timespan+1,8);
+for i=1:length(comp(:,2))       
+    simple=zeros(timespan+1,8);
 %     if comp(i,2)==412||comp(i,2)==436||comp(i,2)==429
 %         load('orig');
 %         flag=0;
@@ -29,28 +29,29 @@ timespan = 24*day(ref(end,5)-ref(1,5))+hour(ref(end,5)-ref(1,5));
 %         load('orig1');
 %     end
 %     load('orig1');
-%     simple(1,:)=onenode(1,:);
-%     lasttime=onenode(1,5);
-%     start=2;
-%     for j=2:timespan
-%         for k=start:length(onenode(:,2))
-%             if abs(hour(onenode(k,5))-hour(lasttime))>=1
-%                 simple(j,:)=onenode(k,:);
-%                 lasttime=onenode(k,5);
-%                 start=k+1;
-%                 break;   
-%             end
-%         end
-%     end   
-%     j=length(simple(:,2));
-%     while(j)
-%         if sum(simple(j,:))~=0
-%             break;
-%         else
-%             simple(j,:)=[];   
-%         end
-%         j=j-1;
-%     end
+    onenode = ref(ref(:,2)==comp(i,2),:);
+    simple(1,:)=onenode(1,:);
+    lasttime=onenode(1,5);
+    start=2;
+    for j=2:timespan
+        for k=start:length(onenode(:,2))
+            if abs(hour(onenode(k,5))-hour(lasttime))>=1
+                simple(j,:)=onenode(k,:);
+                lasttime=onenode(k,5);
+                start=k+1;
+                break;   
+            end
+        end
+    end   
+    j=length(simple(:,2));
+    while(j)
+        if sum(simple(j,:))~=0
+            break;
+        else
+            simple(j,:)=[];   
+        end
+        j=j-1;
+    end
 %     if i~=1&&i~=16&&i~=11
 %         simple1=zeros(timespan+1,8);
 %         simple1(1,:)=simple(1,:);
@@ -68,17 +69,17 @@ timespan = 24*day(ref(end,5)-ref(1,5))+hour(ref(end,5)-ref(1,5));
 %         end
 %         simple=simple1;
 %     end
-%     
-%     simple=[simple;onenode(end,:)];    
-%     simples(i).nodeID=simple;
-% end
-% save ( 'orig_simpled1.mat','comp', 'ref','simples');
+    
+    simple=[simple;onenode(end,:)];    
+    simples(i).nodeID=simple;
+end
+save ( 'orig_simpled2.mat','comp', 'ref','simples');
 
 % 
 
 
 clear;
-load('orig_simpled1.mat');
+load('orig_simpled2.mat');
 
 
 figure('NumberTitle', 'off', 'Name', '单个节点电压变化');
