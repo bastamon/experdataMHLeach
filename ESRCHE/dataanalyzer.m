@@ -72,7 +72,7 @@ for i=1:length(comp(:,2))
     simple=[simple;onenode(end,:)];    
     simples(i).nodeID=simple;
 end
-save ( 'ESRCHE_simpled.mat','comp', 'ref','simples');
+% save ( 'ESRCHE_simpled.mat','comp', 'ref','simples');
 
 
 
