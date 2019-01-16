@@ -29,7 +29,7 @@ xlabel('½Úµã');
 
 
 
-load('ELQECHE.mat');
+load('ELQECHE2.mat');
 for i=1:length(comp(:,2))
     simple(i).nodeID=ref(ref(:,2)==comp(i,2),:);
 end
