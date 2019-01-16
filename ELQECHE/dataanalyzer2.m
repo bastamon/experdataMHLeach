@@ -129,7 +129,7 @@ AvgEn=sum(Ematrix,2)./counts;
 figure('NumberTitle', 'off', 'Name', 'energytrend');
 x=linspace(1,length(AvgEn),length(AvgEn))'-1;
 AvgEn=sort(AvgEn,'descend');
-b=polyfit(x,AvgEn,4);% 3 or 4进行次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
+b=polyfit(x,AvgEn,5);% 3 or 4进行次拟合，b是多项式前面的值。就如2次拟合中y=ax+b,a,b的值。
 % b=polyfit(x,interp1(x,y,x),7);
 yy=polyval(b,x);%得到拟合后y的新值
 plot(x,[AvgEn(1:12);yy(13:end)],'b-');%画拟合图
